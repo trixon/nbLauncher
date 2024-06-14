@@ -2,44 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.trixon.netbeans-platform</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
-    <groupId>se.trixon</groupId>
-    <artifactId>nbLauncher-parent</artifactId>
+    <groupId>se.trixon.nblauncher</groupId>
+    <artifactId>parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>nbLauncher-parent</name>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.netbeans.utilities</groupId>
-                    <artifactId>nbm-maven-plugin</artifactId>
-                    <version>14.1</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <brandingToken>${brandingToken}</brandingToken>
-                        <cluster>${brandingToken}</cluster>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <name>parent</name>
 
     <modules>
         <module>branding</module>
@@ -48,7 +22,6 @@
     </modules>
 
     <properties>
-        <netbeans.version>RELEASE220</netbeans.version>
         <brandingToken>nblauncher</brandingToken>
     </properties>
 </project>
