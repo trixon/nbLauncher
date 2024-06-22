@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,14 @@
  */
 package se.trixon.nblauncher.boot;
 
+import java.io.IOException;
+import javax.swing.SwingUtilities;
 import org.openide.modules.OnStart;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.NbHelper;
 import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
+import se.trixon.nblauncher.core.StorageManager;
 
 /**
  *
@@ -28,8 +32,10 @@ import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 public class DoOnStart implements Runnable {
 
     static {
+//        UIManager.put("EditorTabDisplayerUI", NoTabsTabDisplayerUI.class.getName());
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
+        System.setProperty("netbeans.winsys.status_line.path", "");
 
         NbHelper.setLafDefault("Light");
         NbHelper.setLafAccentColor("#00ff00");
@@ -40,6 +46,16 @@ public class DoOnStart implements Runnable {
 
     @Override
     public void run() {
+        try {
+            StorageManager.getInstance().load();
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        SwingUtilities.invokeLater(() -> {
+//            UIManager.put("ViewTabDisplayerUI", NoTabsTabDisplayerUI.class.getName());
+//            UIManager.put("EditorTabDisplayerUI", NoTabsTabDisplayerUI.class.getName());
+//            UIManager.put("NbMainWindow.showCustomBackground", Boolean.TRUE);
+        });
     }
 
 }

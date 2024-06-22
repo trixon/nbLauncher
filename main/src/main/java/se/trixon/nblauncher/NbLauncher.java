@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,41 @@
  */
 package se.trixon.nblauncher;
 
+import java.io.IOException;
+import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
+import org.openide.windows.IOProvider;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.nblauncher.core.TaskManager;
+import se.trixon.nblauncher.ui.MainTopComponent;
+
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
 public class NbLauncher {
+
+    public static void displaySystemInformation() {
+        String s = "%s\n%s".formatted(
+                Dict.SYSTEM.toUpper(),
+                SystemHelper.getSystemInfo()
+        );
+
+        var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
+        try {
+            io.getOut().reset();
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        io.getOut().println(s);
+        if (TaskManager.getInstance().getItems().isEmpty()) {
+            io.getOut().println();
+            io.getOut().println(NbBundle.getMessage(MainTopComponent.class, "welcome"));
+        }
+
+        io.getOut().close();
+    }
 
 }
