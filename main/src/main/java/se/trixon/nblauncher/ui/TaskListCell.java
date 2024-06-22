@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListCell;
+import se.trixon.nblauncher.core.ExecutorManager;
 import se.trixon.nblauncher.core.Task;
 
 /**
@@ -71,8 +72,7 @@ public class TaskListCell extends EditableListCell<Task> {
                 if (mouseEvent.isControlDown()) {
                     mEditor.editTask(null, task);
                 } else {
-                    System.out.println("request start?");
-//                    ExecutorManager.getInstance().requestStart(task);
+                    ExecutorManager.getInstance().requestStart(task);
                 }
             }
         });

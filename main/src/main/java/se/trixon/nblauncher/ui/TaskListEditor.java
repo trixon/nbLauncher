@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +23,17 @@ import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.awt.StatusDisplayer;
+import org.openide.windows.IOProvider;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.nbp.fx.NbEditableList;
+import se.trixon.almond.nbp.output.OutputHelper;
+import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableList;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.nblauncher.core.ExecutorManager;
 import se.trixon.nblauncher.core.StorageManager;
 import static se.trixon.nblauncher.core.StorageManager.GSON;
 import se.trixon.nblauncher.core.Task;
@@ -81,6 +86,16 @@ public class TaskListEditor {
         });
     }
 
+    private void displayInfo(Task t) {
+        var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
+        var outputHelper = new OutputHelper(Dict.INFORMATION.toString(), io, false);
+
+        io.select();
+        outputHelper.println(OutputLineMode.INFO, t.toString());
+
+        StatusDisplayer.getDefault().setStatusText(String.join(" ", t.getCommand()));
+    }
+
     private void init() {
         mEditableList = new NbEditableList.Builder<Task>()
                 .setItemSingular(Dict.PROFILE.toString())
@@ -111,9 +126,11 @@ public class TaskListEditor {
 
                     return mTaskManager.getById(uuid);
                 })
-                .setOnStart(task -> {
-//                    mExecutorManager.requestStart(task);
-                    System.out.println("start?");
+                .setOnStart(task -> ExecutorManager.getInstance().requestStart(task))
+                .setOnSelect((t, u) -> {
+                    if (u != null) {
+                        displayInfo(u);
+                    }
                 })
                 .build();
 

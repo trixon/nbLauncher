@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,12 @@ package se.trixon.nblauncher.core;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 
 /**
@@ -81,6 +85,22 @@ public class Task implements EditableListItem {
 
     public void setSourceDir(File sourceDir) {
         this.mSourceDir = sourceDir;
+    }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder("[INFO] %s".formatted(mName)).append("\n");
+        sb.append(ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE));
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public ArrayList<String> getCommand() {
+        return new ArrayList<>(List.of(mSourceDir.toString()));
+//        return new ArrayList<>(List.of(mSourceDir.getAbsolutePath()));
+//        return new ArrayList<>(List.of("kwrite"));
+//        return new ArrayList<>(List.of("ls"));
+//        return new ArrayList<>(List.of("ls", "TODO", "COMPUTE", "COMMAND"));
     }
 
 }
