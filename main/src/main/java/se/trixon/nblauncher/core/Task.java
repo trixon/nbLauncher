@@ -32,8 +32,9 @@ import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
  */
 public class Task implements EditableListItem {
 
-    private transient final ResourceBundle mBundle = NbBundle.getBundle(Task.class);
-
+    private static final ResourceBundle sBundle = NbBundle.getBundle(Task.class);
+    @SerializedName("arguments")
+    private String mArguments;
     @SerializedName("cacheDir")
     private File mCacheDir;
     @SerializedName("cacheDirActivated")
@@ -66,6 +67,10 @@ public class Task implements EditableListItem {
     public Task() {
     }
 
+    public String getArguments() {
+        return mArguments;
+    }
+
     public File getCacheDir() {
         return mCacheDir;
     }
@@ -81,6 +86,18 @@ public class Task implements EditableListItem {
         addOptional(cmd, mJavaDirActivated, "--jdkhome", mJavaDir);
 
         addOptionalEnvironment(cmd, true, "netbeans.logger.console=" + (mConsoleLogger ? "true" : "false"));
+
+        if (StringUtils.isNotBlank(mArguments)) {
+            Arrays.stream(StringUtils.split(mArguments, "\n"))
+                    .filter(line -> StringUtils.isNotBlank(line))
+                    .filter(line -> !StringUtils.startsWith(line, "#"))
+                    .forEachOrdered(line -> {
+                        for (var arg : StringUtils.split(line)) {
+                            cmd.add(arg);
+                        }
+                    });
+
+        }
 
         if (StringUtils.isNotBlank(mEnvironment)) {
             Arrays.stream(StringUtils.split(mEnvironment, "\n"))
@@ -149,6 +166,10 @@ public class Task implements EditableListItem {
 
     public boolean isUserDirActivated() {
         return mUserDirActivated;
+    }
+
+    public void setArguments(String arguments) {
+        this.mArguments = arguments;
     }
 
     public void setCacheDir(File cacheDir) {

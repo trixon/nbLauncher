@@ -17,13 +17,13 @@ package se.trixon.nblauncher.ui;
 
 import java.util.function.Predicate;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javax.swing.JFileChooser;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +45,8 @@ import se.trixon.nblauncher.core.TaskManager;
  * @author Patrik Karlström <patrik@trixon.se>
  */
 public class TaskEditor extends GridPane {
+
+    private final TextArea mArgumentsTextArea = new TextArea();
 
     private FileChooserPaneSwingFx mCacheDirChooserPane;
     private DialogDescriptor mDialogDescriptor;
@@ -91,6 +93,7 @@ public class TaskEditor extends GridPane {
         mUserDirChooserPane.getCheckBox().setSelected(task.isUserDirActivated());
         mCacheDirChooserPane.getCheckBox().setSelected(task.isCacheDirActivated());
 
+        mArgumentsTextArea.setText(task.getArguments());
         mEnvironmentTextArea.setText(task.getEnvironment());
     }
 
@@ -112,6 +115,7 @@ public class TaskEditor extends GridPane {
         mTask.setUserDirActivated(mUserDirChooserPane.getCheckBox().isSelected());
         mTask.setCacheDirActivated(mCacheDirChooserPane.getCheckBox().isSelected());
 
+        mTask.setArguments(mArgumentsTextArea.getText());
         mTask.setEnvironment(mEnvironmentTextArea.getText());
 
         StorageManager.save();
@@ -127,12 +131,15 @@ public class TaskEditor extends GridPane {
         var nameLabel = new Label(Dict.NAME.toString());
         var localeLabel = new Label("Locale");
         var fontSizeLabel = new Label("Font size");
+        var argLabel = new Label("Additional arguments");
+        var envLabel = new Label("Environment");
         mNameTextField = new TextField();
         mExecPathChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), "Executable", Almond.getFrame(), JFileChooser.FILES_ONLY);
         mUserDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "User directory");
         mCacheDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "Cache directory");
         mJavaDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "Java");
-        mEnvironmentTextArea.setPromptText("sss");
+        mArgumentsTextArea.setPromptText("Additional hint");
+        mEnvironmentTextArea.setPromptText("Environment hint");
 
         int col = 0;
         int row = 0;
@@ -144,7 +151,10 @@ public class TaskEditor extends GridPane {
         add(mJavaDirChooserPane, 2, row, 2, 1);
         add(mUserDirChooserPane, col, ++row, 2, 1);
         add(mCacheDirChooserPane, 2, row, 2, 1);
-        add(mEnvironmentTextArea, 0, ++row, REMAINING, REMAINING);
+        add(argLabel, col, ++row, 2, 1);
+        add(envLabel, 2, row, 2, 1);
+        add(mArgumentsTextArea, 0, ++row, 2, REMAINING);
+        add(mEnvironmentTextArea, 2, row, 2, REMAINING);
 
         var rowInsets = FxHelper.getUIScaledInsets(0, 0, 8, 0);
 
@@ -156,10 +166,9 @@ public class TaskEditor extends GridPane {
         GridPane.setMargin(mCacheDirChooserPane, rowInsets);
         GridPane.setMargin(mJavaDirChooserPane, rowInsets);
         GridPane.setMargin(mLoggerCheckBox, rowInsets);
-        GridPane.setVgrow(mEnvironmentTextArea, Priority.ALWAYS);
-        GridPane.setFillHeight(mEnvironmentTextArea, true);
         setHgap(FxHelper.getUIScaled(12.0));
         FxHelper.autoSizeColumn(this, 4);
+        mArgumentsTextArea.setPrefHeight(9999);
         mEnvironmentTextArea.setPrefHeight(9999);
         mFontSizeComboBox.getItems().setAll("",
                 "8",
@@ -218,20 +227,26 @@ public class TaskEditor extends GridPane {
 
         validationSupport.registerValidator(mExecPathChooserPane.getTextField(), indicateRequired, Validator.createEmptyValidator(textRequired));
         validationSupport.validationResultProperty().addListener((p, o, n) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid() && !mEnvironmentTextArea.isFocused());
+            mDialogDescriptor.setValid(!validationSupport.isInvalid() && !isTextAreaFocused());
         });
 
-        mEnvironmentTextArea.focusedProperty().addListener((p, o, n) -> {
+        ChangeListener<Boolean> focusListener = (p, o, n) -> {
             validationSupport.revalidate();
 
-            if (mEnvironmentTextArea.isFocused()) {
+            if (isTextAreaFocused()) {
                 mNotificationLineSupport.setInformationMessage("Exit text area in order to close the dialog");
             } else {
                 mNotificationLineSupport.clearMessages();
             }
-        });
+        };
+
+        mArgumentsTextArea.focusedProperty().addListener(focusListener);
+        mEnvironmentTextArea.focusedProperty().addListener(focusListener);
 
         validationSupport.initInitialDecoration();
     }
 
+    private boolean isTextAreaFocused() {
+        return mNameTextField.getScene().getFocusOwner() instanceof TextArea;
+    }
 }
