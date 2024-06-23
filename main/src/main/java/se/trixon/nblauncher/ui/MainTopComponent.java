@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2024 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ import se.trixon.almond.util.Dict;
 public final class MainTopComponent extends FxTopComponent {
 
     public MainTopComponent() {
-        setName(Dict.PROFILE.toString());
+        setName(Dict.APPLICATIONS.toString());
     }
 
     @Override

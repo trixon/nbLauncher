@@ -46,7 +46,6 @@ import se.trixon.nblauncher.core.TaskManager;
 public class TaskListEditor {
 
     private EditableList<Task> mEditableList;
-//    private final ExecutorManager mExecutorManager = ExecutorManager.getInstance();
     private final TaskManager mTaskManager = TaskManager.getInstance();
 
     public TaskListEditor() {
@@ -72,6 +71,7 @@ public class TaskListEditor {
             editor.setPrefSize(FxHelper.getUIScaled(600), FxHelper.getUIScaled(660));
             var d = new DialogDescriptor(dialogPanel, Objects.toString(title, Dict.EDIT.toString()));
             d.setValid(false);
+            editor.setNotificationLineSupport(d.createNotificationLineSupport());
             dialogPanel.setNotifyDescriptor(d);
             dialogPanel.initFx(() -> {
                 editor.load(task, d);
@@ -86,20 +86,20 @@ public class TaskListEditor {
         });
     }
 
-    private void displayInfo(Task t) {
+    private void displayInfo(Task task) {
         var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
         var outputHelper = new OutputHelper(Dict.INFORMATION.toString(), io, false);
 
         io.select();
-        outputHelper.println(OutputLineMode.INFO, t.toString());
+        outputHelper.println(OutputLineMode.INFO, task.toString());
 
-        StatusDisplayer.getDefault().setStatusText(String.join(" ", t.getCommand()));
+        StatusDisplayer.getDefault().setStatusText(String.join(" ", task.getCommand()));
     }
 
     private void init() {
         mEditableList = new NbEditableList.Builder<Task>()
-                .setItemSingular(Dict.PROFILE.toString())
-                .setItemPlural(Dict.PROFILES.toString())
+                .setItemSingular(Dict.APPLICATION.toString())
+                .setItemPlural(Dict.APPLICATIONS.toString())
                 .setItemsProperty(mTaskManager.itemsProperty())
                 .setOnEdit((title, task) -> {
                     editTask(title, task);

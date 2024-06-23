@@ -75,7 +75,7 @@ public class Executor implements Runnable {
 
         mExecutorThread = new Thread(() -> {
             mOutputHelper.start();
-            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.PROFILE.toLower(), mTask.getName());
+            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.APPLICATION.toLower(), mTask.getName());
             mMainFoldHandle = IOFolding.startFold(mInputOutput, true);
             mInputOutput.getOut().println();
             mInputOutput.getOut().println(String.join(" ", mTask.getCommand()));
@@ -97,7 +97,7 @@ public class Executor implements Runnable {
     private void jobEnded(OutputLineMode outputLineMode, String action) {
         mMainFoldHandle.silentFinish();
         mStatusDisplayer.setStatusText(action);
-        mOutputHelper.printSummary(outputLineMode, action, Dict.PROFILE.toString());
+        mOutputHelper.printSummary(outputLineMode, action, Dict.APPLICATION.toLower());
     }
 
     private int runProcess(List<String> command) {

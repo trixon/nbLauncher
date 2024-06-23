@@ -58,7 +58,7 @@ public class TaskListCell extends EditableListCell<Task> {
     private void addContent(Task task) {
         setText(null);
         mNameLabel.setText(task.getName());
-        mDescLabel.setText(task.getDescription());
+//        mDescLabel.setText(task.getDescription());
         String lastRun = "-";
         if (task.getLastRun() != 0) {
             var ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(task.getLastRun()), ZoneId.systemDefault());
