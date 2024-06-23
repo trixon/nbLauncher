@@ -15,6 +15,7 @@
  */
 package se.trixon.nblauncher.ui;
 
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -31,6 +32,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.openide.DialogDescriptor;
 import org.openide.NotificationLineSupport;
+import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -46,11 +48,10 @@ import se.trixon.nblauncher.core.TaskManager;
  */
 public class TaskEditor extends GridPane {
 
-    private final TextArea mArgumentsTextArea = new TextArea();
-
+    private final TextArea mArgTextArea = new TextArea();
     private FileChooserPaneSwingFx mCacheDirChooserPane;
     private DialogDescriptor mDialogDescriptor;
-    private final TextArea mEnvironmentTextArea = new TextArea();
+    private final TextArea mEnvTextArea = new TextArea();
     private FileChooserPaneSwingFx mExecPathChooserPane;
     private final ComboBox<String> mFontSizeComboBox = new ComboBox<>();
     private FileChooserPaneSwingFx mJavaDirChooserPane;
@@ -61,6 +62,7 @@ public class TaskEditor extends GridPane {
     private Task mTask;
     private final TaskManager mTaskManager = TaskManager.getInstance();
     private FileChooserPaneSwingFx mUserDirChooserPane;
+    private final ResourceBundle mBundle = NbBundle.getBundle(TaskEditor.class);
 
     public TaskEditor() {
         createUI();
@@ -93,8 +95,8 @@ public class TaskEditor extends GridPane {
         mUserDirChooserPane.getCheckBox().setSelected(task.isUserDirActivated());
         mCacheDirChooserPane.getCheckBox().setSelected(task.isCacheDirActivated());
 
-        mArgumentsTextArea.setText(task.getArguments());
-        mEnvironmentTextArea.setText(task.getEnvironment());
+        mArgTextArea.setText(task.getArg());
+        mEnvTextArea.setText(task.getEnv());
     }
 
     public Task save() {
@@ -115,8 +117,8 @@ public class TaskEditor extends GridPane {
         mTask.setUserDirActivated(mUserDirChooserPane.getCheckBox().isSelected());
         mTask.setCacheDirActivated(mCacheDirChooserPane.getCheckBox().isSelected());
 
-        mTask.setArguments(mArgumentsTextArea.getText());
-        mTask.setEnvironment(mEnvironmentTextArea.getText());
+        mTask.setArg(mArgTextArea.getText());
+        mTask.setEnv(mEnvTextArea.getText());
 
         StorageManager.save();
 
@@ -138,8 +140,8 @@ public class TaskEditor extends GridPane {
         mUserDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "User directory");
         mCacheDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "Cache directory");
         mJavaDirChooserPane = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY, "Java");
-        mArgumentsTextArea.setPromptText("Additional hint");
-        mEnvironmentTextArea.setPromptText("Environment hint");
+        mArgTextArea.setPromptText(mBundle.getString("hintArg"));
+        mEnvTextArea.setPromptText(mBundle.getString("hintEnv"));
 
         int col = 0;
         int row = 0;
@@ -153,8 +155,8 @@ public class TaskEditor extends GridPane {
         add(mCacheDirChooserPane, 2, row, 2, 1);
         add(argLabel, col, ++row, 2, 1);
         add(envLabel, 2, row, 2, 1);
-        add(mArgumentsTextArea, 0, ++row, 2, REMAINING);
-        add(mEnvironmentTextArea, 2, row, 2, REMAINING);
+        add(mArgTextArea, 0, ++row, 2, REMAINING);
+        add(mEnvTextArea, 2, row, 2, REMAINING);
 
         var rowInsets = FxHelper.getUIScaledInsets(0, 0, 8, 0);
 
@@ -168,8 +170,8 @@ public class TaskEditor extends GridPane {
         GridPane.setMargin(mLoggerCheckBox, rowInsets);
         setHgap(FxHelper.getUIScaled(12.0));
         FxHelper.autoSizeColumn(this, 4);
-        mArgumentsTextArea.setPrefHeight(9999);
-        mEnvironmentTextArea.setPrefHeight(9999);
+        mArgTextArea.setPrefHeight(9999);
+        mEnvTextArea.setPrefHeight(9999);
         mFontSizeComboBox.getItems().setAll("",
                 "8",
                 "9",
@@ -205,6 +207,9 @@ public class TaskEditor extends GridPane {
         var textUnique = "Text has to be unique";
         boolean indicateRequired = false;
 
+        var userCachePredicate = (Predicate<String>) s -> {
+            return !isInvalidUserChache();
+        };
         var namePredicate = (Predicate<String>) s -> {
             return mTaskManager.isValid(mTask.getName(), s);
         };
@@ -226,9 +231,25 @@ public class TaskEditor extends GridPane {
         ));
 
         validationSupport.registerValidator(mExecPathChooserPane.getTextField(), indicateRequired, Validator.createEmptyValidator(textRequired));
+        validationSupport.registerValidator(mUserDirChooserPane.getTextField(), indicateRequired, Validator.createPredicateValidator(userCachePredicate, "clash"));
+        validationSupport.registerValidator(mCacheDirChooserPane.getTextField(), indicateRequired, Validator.createPredicateValidator(userCachePredicate, "clash"));
+
         validationSupport.validationResultProperty().addListener((p, o, n) -> {
             mDialogDescriptor.setValid(!validationSupport.isInvalid() && !isTextAreaFocused());
         });
+
+        ChangeListener<Boolean> selectionListener = (p, o, n) -> {
+            validationSupport.revalidate();
+
+            if (isInvalidUserChache()) {
+                mNotificationLineSupport.setErrorMessage("User directory must be different from cache directory.");
+            } else {
+                mNotificationLineSupport.clearMessages();
+            }
+        };
+
+        mUserDirChooserPane.getCheckBox().selectedProperty().addListener(selectionListener);
+        mCacheDirChooserPane.getCheckBox().selectedProperty().addListener(selectionListener);
 
         ChangeListener<Boolean> focusListener = (p, o, n) -> {
             validationSupport.revalidate();
@@ -240,10 +261,16 @@ public class TaskEditor extends GridPane {
             }
         };
 
-        mArgumentsTextArea.focusedProperty().addListener(focusListener);
-        mEnvironmentTextArea.focusedProperty().addListener(focusListener);
+        mArgTextArea.focusedProperty().addListener(focusListener);
+        mEnvTextArea.focusedProperty().addListener(focusListener);
 
         validationSupport.initInitialDecoration();
+    }
+
+    private boolean isInvalidUserChache() {
+        return mUserDirChooserPane.getCheckBox().isSelected()
+                && mCacheDirChooserPane.getCheckBox().isSelected()
+                && StringUtils.equalsIgnoreCase(mUserDirChooserPane.getPathAsString(), mCacheDirChooserPane.getPathAsString());
     }
 
     private boolean isTextAreaFocused() {

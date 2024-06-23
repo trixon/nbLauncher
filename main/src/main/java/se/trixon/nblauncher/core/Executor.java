@@ -87,6 +87,9 @@ public class Executor implements Runnable {
                 jobEnded(OutputLineMode.ERROR, Dict.FAILED.toString());
             }
 
+            mTask.setLastRun(System.currentTimeMillis());
+            StorageManager.save();
+
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
         }, "Executor");

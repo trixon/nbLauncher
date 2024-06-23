@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListCell;
 import se.trixon.nblauncher.core.ExecutorManager;
@@ -33,11 +34,10 @@ import se.trixon.nblauncher.core.Task;
  */
 public class TaskListCell extends EditableListCell<Task> {
 
-    private final Label mDescLabel = new Label();
     private final TaskListEditor mEditor;
-    private final Label mNameLabel = new Label();
+    private final Label mExecLabel = new Label();
     private final Label mLastRunLabel = new Label();
-
+    private final Label mNameLabel = new Label();
     private final VBox mRoot = new VBox();
 
     public TaskListCell(TaskListEditor editor) {
@@ -58,7 +58,8 @@ public class TaskListCell extends EditableListCell<Task> {
     private void addContent(Task task) {
         setText(null);
         mNameLabel.setText(task.getName());
-//        mDescLabel.setText(task.getDescription());
+        var execPath = StringUtils.abbreviateMiddle(task.getExecPath().toString(), "...", 50);
+        mExecLabel.setText(execPath);
         String lastRun = "-";
         if (task.getLastRun() != 0) {
             var ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(task.getLastRun()), ZoneId.systemDefault());
@@ -66,7 +67,7 @@ public class TaskListCell extends EditableListCell<Task> {
         }
         mLastRunLabel.setText(lastRun);
 
-        mRoot.getChildren().setAll(mNameLabel, mDescLabel, mLastRunLabel);
+        mRoot.getChildren().setAll(mNameLabel, mExecLabel, mLastRunLabel);
         mRoot.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
                 if (mouseEvent.isControlDown()) {
@@ -89,7 +90,7 @@ public class TaskListCell extends EditableListCell<Task> {
         var fontStyle = "-fx-font-size: %.0fpx; -fx-font-weight: %s;";
 
         mNameLabel.setStyle(fontStyle.formatted(fontSize * 1.4, "bold"));
-        mDescLabel.setStyle(fontStyle.formatted(fontSize * 1.1, "normal"));
+        mExecLabel.setStyle(fontStyle.formatted(fontSize * 1.1, "normal"));
         mLastRunLabel.setStyle(fontStyle.formatted(fontSize * 1.1, "normal"));
     }
 

@@ -33,16 +33,16 @@ import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 public class Task implements EditableListItem {
 
     private static final ResourceBundle sBundle = NbBundle.getBundle(Task.class);
-    @SerializedName("arguments")
-    private String mArguments;
+    @SerializedName("arg")
+    private String mArg;
     @SerializedName("cacheDir")
     private File mCacheDir;
     @SerializedName("cacheDirActivated")
     private boolean mCacheDirActivated;
     @SerializedName("consoleLogger")
     private boolean mConsoleLogger;
-    @SerializedName("environment")
-    private String mEnvironment;
+    @SerializedName("env")
+    private String mEnv;
     @SerializedName("execPath")
     private File mExecPath;
     @SerializedName("fontSize")
@@ -67,8 +67,8 @@ public class Task implements EditableListItem {
     public Task() {
     }
 
-    public String getArguments() {
-        return mArguments;
+    public String getArg() {
+        return mArg;
     }
 
     public File getCacheDir() {
@@ -80,27 +80,25 @@ public class Task implements EditableListItem {
         cmd.add(mExecPath.toString());
 
         addOptional(cmd, true, "--fontsize", mFontSize);
-        addOptional(cmd, true, "--locale", mLocale);
+        addOptional(cmd, true, "--locale", StringUtils.replace(mLocale, "-", ":"));
         addOptional(cmd, mUserDirActivated, "--userdir", mUserDir);
         addOptional(cmd, mCacheDirActivated, "--cachedir", mCacheDir);
         addOptional(cmd, mJavaDirActivated, "--jdkhome", mJavaDir);
 
         addOptionalEnvironment(cmd, true, "netbeans.logger.console=" + (mConsoleLogger ? "true" : "false"));
 
-        if (StringUtils.isNotBlank(mArguments)) {
-            Arrays.stream(StringUtils.split(mArguments, "\n"))
+        if (StringUtils.isNotBlank(mArg)) {
+            Arrays.stream(StringUtils.split(mArg, "\n"))
                     .filter(line -> StringUtils.isNotBlank(line))
                     .filter(line -> !StringUtils.startsWith(line, "#"))
                     .forEachOrdered(line -> {
-                        for (var arg : StringUtils.split(line)) {
-                            cmd.add(arg);
-                        }
+                        cmd.addAll(Arrays.asList(StringUtils.split(line)));
                     });
 
         }
 
-        if (StringUtils.isNotBlank(mEnvironment)) {
-            Arrays.stream(StringUtils.split(mEnvironment, "\n"))
+        if (StringUtils.isNotBlank(mEnv)) {
+            Arrays.stream(StringUtils.split(mEnv, "\n"))
                     .filter(s -> !StringUtils.startsWith(s, "#"))
                     .filter(s -> StringUtils.contains(s, "="))
                     .forEachOrdered(s -> {
@@ -115,8 +113,8 @@ public class Task implements EditableListItem {
         return String.join(" ", getCommand());
     }
 
-    public String getEnvironment() {
-        return mEnvironment;
+    public String getEnv() {
+        return mEnv;
     }
 
     public File getExecPath() {
@@ -168,8 +166,8 @@ public class Task implements EditableListItem {
         return mUserDirActivated;
     }
 
-    public void setArguments(String arguments) {
-        this.mArguments = arguments;
+    public void setArg(String arg) {
+        this.mArg = arg;
     }
 
     public void setCacheDir(File cacheDir) {
@@ -184,8 +182,8 @@ public class Task implements EditableListItem {
         this.mConsoleLogger = consoleLogger;
     }
 
-    public void setEnvironment(String environment) {
-        this.mEnvironment = environment;
+    public void setEnv(String env) {
+        this.mEnv = env;
     }
 
     public void setExecPath(File execPath) {
