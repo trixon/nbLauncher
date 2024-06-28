@@ -235,7 +235,7 @@ public class TaskEditor extends GridPane {
         validationSupport.registerValidator(mCacheDirChooserPane.getTextField(), indicateRequired, Validator.createPredicateValidator(userCachePredicate, "clash"));
 
         validationSupport.validationResultProperty().addListener((p, o, n) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid() && !isTextAreaFocused());
+            mDialogDescriptor.setValid(!validationSupport.isInvalid() && !FxHelper.isFocusedNodeOfType(mNameTextField.getScene(), TextArea.class));
         });
 
         ChangeListener<Boolean> selectionListener = (p, o, n) -> {
@@ -254,7 +254,7 @@ public class TaskEditor extends GridPane {
         ChangeListener<Boolean> focusListener = (p, o, n) -> {
             validationSupport.revalidate();
 
-            if (isTextAreaFocused()) {
+            if (FxHelper.isFocusedNodeOfType(mNameTextField.getScene(), TextArea.class)) {
                 mNotificationLineSupport.setInformationMessage("Exit text area in order to close the dialog");
             } else {
                 mNotificationLineSupport.clearMessages();
@@ -273,7 +273,4 @@ public class TaskEditor extends GridPane {
                 && StringUtils.equalsIgnoreCase(mUserDirChooserPane.getPathAsString(), mCacheDirChooserPane.getPathAsString());
     }
 
-    private boolean isTextAreaFocused() {
-        return mNameTextField.getScene().getFocusOwner() instanceof TextArea;
-    }
 }
