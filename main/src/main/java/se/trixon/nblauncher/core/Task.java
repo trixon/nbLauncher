@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 
@@ -80,7 +81,7 @@ public class Task implements EditableListItem {
         cmd.add(mExecPath.toString());
 
         addOptional(cmd, true, "--fontsize", mFontSize);
-        addOptional(cmd, true, "--locale", StringUtils.replace(mLocale, "-", ":"));
+        addOptional(cmd, true, "--locale", Strings.CS.replace(mLocale, "-", ":"));
         addOptional(cmd, mUserDirActivated, "--userdir", mUserDir);
         addOptional(cmd, mCacheDirActivated, "--cachedir", mCacheDir);
         addOptional(cmd, mJavaDirActivated, "--jdkhome", mJavaDir);
@@ -90,7 +91,7 @@ public class Task implements EditableListItem {
         if (StringUtils.isNotBlank(mArg)) {
             Arrays.stream(StringUtils.split(mArg, "\n"))
                     .filter(line -> StringUtils.isNotBlank(line))
-                    .filter(line -> !StringUtils.startsWith(line, "#"))
+                    .filter(line -> !Strings.CS.startsWith(line, "#"))
                     .forEachOrdered(line -> {
                         cmd.addAll(Arrays.asList(StringUtils.split(line)));
                     });
@@ -99,8 +100,8 @@ public class Task implements EditableListItem {
 
         if (StringUtils.isNotBlank(mEnv)) {
             Arrays.stream(StringUtils.split(mEnv, "\n"))
-                    .filter(s -> !StringUtils.startsWith(s, "#"))
-                    .filter(s -> StringUtils.contains(s, "="))
+                    .filter(s -> !Strings.CS.startsWith(s, "#"))
+                    .filter(s -> Strings.CS.contains(s, "="))
                     .forEachOrdered(s -> {
                         addOptionalEnvironment(cmd, true, s);
                     });
@@ -211,7 +212,7 @@ public class Task implements EditableListItem {
     }
 
     public void setLocale(Locale locale) {
-        if (StringUtils.equalsIgnoreCase(locale.toLanguageTag(), "und")) {
+        if (Strings.CI.equals(locale.toLanguageTag(), "und")) {
             mLocale = "";
         } else {
             mLocale = locale.toLanguageTag();

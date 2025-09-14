@@ -27,7 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javax.swing.JFileChooser;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.openide.DialogDescriptor;
@@ -219,7 +219,7 @@ public class TaskEditor extends GridPane {
             if (!mTaskManager.exists(newName)) {
                 return true;
             } else {
-                return StringUtils.equalsIgnoreCase(newName, mTask.getName());
+                return Strings.CI.equals(newName, mTask.getName());
             }
         };
 
@@ -270,7 +270,7 @@ public class TaskEditor extends GridPane {
     private boolean isInvalidUserChache() {
         return mUserDirChooserPane.getCheckBox().isSelected()
                 && mCacheDirChooserPane.getCheckBox().isSelected()
-                && StringUtils.equalsIgnoreCase(mUserDirChooserPane.getPathAsString(), mCacheDirChooserPane.getPathAsString());
+                && Strings.CI.equals(mUserDirChooserPane.getPathAsString(), mCacheDirChooserPane.getPathAsString());
     }
 
 }
