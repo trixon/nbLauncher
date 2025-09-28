@@ -10,7 +10,7 @@
 
     <groupId>se.trixon.nblauncher</groupId>
     <artifactId>parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>25.09</version>
     <packaging>pom</packaging>
 
     <name>parent</name>
