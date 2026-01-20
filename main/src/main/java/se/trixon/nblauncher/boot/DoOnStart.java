@@ -18,9 +18,7 @@ package se.trixon.nblauncher.boot;
 import java.io.IOException;
 import org.openide.modules.OnStart;
 import org.openide.util.Exceptions;
-import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.NbHelper;
-import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.nblauncher.core.StorageManager;
 
 /**
@@ -38,7 +36,7 @@ public class DoOnStart implements Runnable {
         NbHelper.setLafAccentColor("#00ff00");
         NbHelper.initNightModeIfNeeded();
 
-        NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
+//        NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
     }
 
     @Override
