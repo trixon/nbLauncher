@@ -4,7 +4,7 @@
     <parent>
         <groupId>se.trixon.nblauncher</groupId>
         <artifactId>parent</artifactId>
-        <version>25.09</version>
+        <version>25.09x</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>main</artifactId>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>11.2.2</version>
+            <version>11.2.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
