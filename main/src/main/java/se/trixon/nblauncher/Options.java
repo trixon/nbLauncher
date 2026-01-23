@@ -15,33 +15,36 @@
  */
 package se.trixon.nblauncher;
 
-import java.io.IOException;
-import org.openide.util.Exceptions;
-import org.openide.windows.IOProvider;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
+import org.openide.util.NbPreferences;
+import se.trixon.almond.util.OptionsBase;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public class NbLauncher {
+public class Options extends OptionsBase {
 
-    public static void displaySystemInformation() {
-        String s = "%s\n%s".formatted(
-                Dict.SYSTEM.toUpper(),
-                SystemHelper.getSystemInfo()
-        );
+    public static final String KEY_PATH_JAVA = "path.java";
 
-        var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
-        try {
-            io.getOut().reset();
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+    public static Options getInstance() {
+        return Holder.INSTANCE;
+    }
 
-        io.getOut().println(s);
-        io.getOut().close();
+    private Options() {
+        mPreferences = NbPreferences.forModule(getClass());
+    }
+
+    public String getJavaPath() {
+        return mPreferences.get(KEY_PATH_JAVA, null);
+    }
+
+    public void setJavaPath(String value) {
+        mPreferences.put(KEY_PATH_JAVA, value);
+    }
+
+    private static class Holder {
+
+        private static final Options INSTANCE = new Options();
     }
 
 }

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
+import se.trixon.nblauncher.Options;
 
 /**
  *
@@ -64,6 +65,7 @@ public class Task implements EditableListItem {
     private File mUserDir;
     @SerializedName("userDirActivated")
     private boolean mUserDirActivated;
+    private final Options mOptions = Options.getInstance();
 
     public Task() {
     }
@@ -84,7 +86,12 @@ public class Task implements EditableListItem {
         addOptional(cmd, true, "--locale", Strings.CS.replace(mLocale, "-", ":"));
         addOptional(cmd, mUserDirActivated, "--userdir", mUserDir);
         addOptional(cmd, mCacheDirActivated, "--cachedir", mCacheDir);
-        addOptional(cmd, mJavaDirActivated, "--jdkhome", mJavaDir);
+        var defaultJavaDir = mOptions.getJavaPath();
+        if (mJavaDirActivated) {
+            addOptional(cmd, mJavaDirActivated, "--jdkhome", mJavaDir);
+        } else if (defaultJavaDir != null) {
+            addOptional(cmd, true, "--jdkhome", defaultJavaDir);
+        }
 
         addOptionalEnvironment(cmd, true, "netbeans.logger.console=" + (mConsoleLogger ? "true" : "false"));
 
