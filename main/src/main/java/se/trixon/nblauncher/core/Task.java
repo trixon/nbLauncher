@@ -15,16 +15,14 @@
  */
 package se.trixon.nblauncher.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 import se.trixon.nblauncher.Options;
 
@@ -34,38 +32,37 @@ import se.trixon.nblauncher.Options;
  */
 public class Task implements EditableListItem {
 
-    private static final ResourceBundle sBundle = NbBundle.getBundle(Task.class);
-    @SerializedName("arg")
+    @JsonProperty("arg")
     private String mArg;
-    @SerializedName("cacheDir")
+    @JsonProperty("cacheDir")
     private File mCacheDir;
-    @SerializedName("cacheDirActivated")
+    @JsonProperty("cacheDirActivated")
     private boolean mCacheDirActivated;
-    @SerializedName("consoleLogger")
+    @JsonProperty("consoleLogger")
     private boolean mConsoleLogger;
-    @SerializedName("env")
+    @JsonProperty("env")
     private String mEnv;
-    @SerializedName("execPath")
+    @JsonProperty("execPath")
     private File mExecPath;
-    @SerializedName("fontSize")
+    @JsonProperty("fontSize")
     private String mFontSize;
-    @SerializedName("uuid")
+    @JsonProperty("uuid")
     private String mId = UUID.randomUUID().toString();
-    @SerializedName("javaDir")
+    @JsonProperty("javaDir")
     private File mJavaDir;
-    @SerializedName("javaDirActivated")
+    @JsonProperty("javaDirActivated")
     private boolean mJavaDirActivated;
-    @SerializedName("last_run")
+    @JsonProperty("last_run")
     private long mLastRun;
-    @SerializedName("locale")
+    @JsonProperty("locale")
     private String mLocale;
-    @SerializedName("name")
+    @JsonProperty("name")
     private String mName;
-    @SerializedName("userDir")
+    private transient final Options mOptions = Options.getInstance();
+    @JsonProperty("userDir")
     private File mUserDir;
-    @SerializedName("userDirActivated")
+    @JsonProperty("userDirActivated")
     private boolean mUserDirActivated;
-    private final Options mOptions = Options.getInstance();
 
     public Task() {
     }
@@ -175,31 +172,31 @@ public class Task implements EditableListItem {
     }
 
     public void setArg(String arg) {
-        this.mArg = arg;
+        mArg = arg;
     }
 
     public void setCacheDir(File cacheDir) {
-        this.mCacheDir = cacheDir;
+        mCacheDir = cacheDir;
     }
 
     public void setCacheDirActivated(boolean cacheDirActivated) {
-        this.mCacheDirActivated = cacheDirActivated;
+        mCacheDirActivated = cacheDirActivated;
     }
 
     public void setConsoleLogger(boolean consoleLogger) {
-        this.mConsoleLogger = consoleLogger;
+        mConsoleLogger = consoleLogger;
     }
 
     public void setEnv(String env) {
-        this.mEnv = env;
+        mEnv = env;
     }
 
     public void setExecPath(File execPath) {
-        this.mExecPath = execPath;
+        mExecPath = execPath;
     }
 
     public void setFontSize(String fontSize) {
-        this.mFontSize = fontSize;
+        mFontSize = fontSize;
     }
 
     public void setId(String id) {
@@ -207,11 +204,11 @@ public class Task implements EditableListItem {
     }
 
     public void setJavaDir(File javaDir) {
-        this.mJavaDir = javaDir;
+        mJavaDir = javaDir;
     }
 
     public void setJavaDirActivated(boolean javaDirActivated) {
-        this.mJavaDirActivated = javaDirActivated;
+        mJavaDirActivated = javaDirActivated;
     }
 
     public void setLastRun(long lastRun) {
@@ -231,11 +228,11 @@ public class Task implements EditableListItem {
     }
 
     public void setUserDir(File userDir) {
-        this.mUserDir = userDir;
+        mUserDir = userDir;
     }
 
     public void setUserDirActivated(boolean userDirActivated) {
-        this.mUserDirActivated = userDirActivated;
+        mUserDirActivated = userDirActivated;
     }
 
     @Override
